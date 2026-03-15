@@ -28,6 +28,9 @@ WORKDIR /app
 # Copy frontend source code
 COPY . ./backend
 
+# Instruction Manual" Fix
+COPY config.yaml /app/backend/config.yaml
+
 # Install dependencies with cache mount
 RUN sh -c "cd backend && uv sync"
 
