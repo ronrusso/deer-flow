@@ -25,13 +25,13 @@ RUN pip install uv
 # Set working directory
 WORKDIR /app
 
-# Copy frontend source code
-COPY . ./backend
+# Copy the actual backend code
+COPY backend ./backend
 
-# Instruction Manual" Fix
-COPY config.yaml /app/backend/config.yaml
+# Instruction Manual Fix - now that we start from the root
+COPY config.yaml ./backend/config.yaml
 
-# Install dependencies with cache mount
+# Install dependencies
 RUN sh -c "cd backend && uv sync"
 
 # Expose ports (gateway: 8001, langgraph: 2024)
