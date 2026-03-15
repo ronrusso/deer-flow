@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
 COPY --from=docker:cli /usr/local/bin/docker /usr/local/bin/docker
 
 # Install uv from a pinned versioned image (avoids curl|sh from untrusted remote)
-COPY --from=ghcr.io/astral-sh/uv:0.7.20 /uv /uvx /usr/local/bin/
+RUN pip install uv
 
 # Set working directory
 WORKDIR /app
