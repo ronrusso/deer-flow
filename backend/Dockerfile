@@ -26,7 +26,7 @@ RUN pip install uv
 WORKDIR /app
 
 # Copy frontend source code
-COPY backend ./backend
+COPY . ./backend
 
 # Install dependencies with cache mount
 RUN sh -c "cd backend && uv sync"
