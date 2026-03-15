@@ -223,12 +223,25 @@ _app_config: AppConfig | None = None
 def get_app_config() -> AppConfig:
     """Get the DeerFlow config instance.
 
-    Returns a cached singleton instance. Use `reload_app_config()` to reload
-    from file, or `reset_app_config()` to clear the cache.
+    Loads from DEER_FLOW_CONFIG env var (YAML string) if set,
+    otherwise loads from file. Returns a cached singleton instance.
+    Use `reload_app_config()` to reload, or `reset_app_config()` to clear cache.
     """
     global _app_config
     if _app_config is None:
-        _app_config = AppConfig.from_file()
+        # Check if config is provided as environment variable
+        config_str = os.getenv("DEER_FLOW_CONFIG")
+        if config_str:
+            config_data = yaml.safe_load(config_str) or {}
+            config_data = AppConfig.resolve_env_variables(config_data)
+            
+            # Load extensions config
+            extensions_config = ExtensionsConfig.from_file()
+            config_data["extensions"] = extensions_config.model_dump()
+            
+            _app_config = AppConfig.model_validate(config_data)
+        else:
+            _app_config = AppConfig.from_file()
     return _app_config
 
 
