@@ -28,9 +28,6 @@ WORKDIR /app
 # Copy full root context
 COPY . .
 
-# Config.yaml is gitignored - placeholder prevents build failure
-RUN touch /app/config.yaml
-
 # Move to backend and install deps
 WORKDIR /app/backend
 RUN uv sync --frozen --no-cache
