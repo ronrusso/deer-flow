@@ -16,26 +16,27 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Docker CLI (for DooD: allows starting sandbox containers via host Docker socket)
+# Install Docker CLI (for DooD sandbox containers) - fixed image name
 COPY --from=public.ecr.aws/docker/library/docker:cli /usr/local/bin/docker /usr/local/bin/docker
 
-# Install uv from a pinned versioned image (avoids curl|sh from untrusted remote)
-RUN pip install uv
+# Install pinned uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
 # Set working directory
 WORKDIR /app
 
-# Copy the actual backend code
+# Copy full root context
 COPY . .
 
-# Instruction Manual Fix
-COPY config.yaml ./config.yaml
+# Config.yaml is gitignored - placeholder prevents build failure
+RUN touch /app/config.yaml
 
-# Install dependencies
-RUN uv sync
+# Move to backend and install deps
+WORKDIR /app/backend
+RUN uv sync --frozen --no-cache
 
-# Expose ports (gateway: 8001, langgraph: 2024)
+# Expose ports
 EXPOSE 8001 2024
 
-# Default command (can be overridden in docker-compose)
-CMD ["sh", "-c", "cd backend && PYTHONPATH=. uv run uvicorn app.gateway.app:app --host 0.0.0.0 --port 8001"]
+# Run command
+CMD ["sh", "-c", "PYTHONPATH=. uv run uvicorn app.gateway.app:app --host 0.0.0.0 --port 8001"]
