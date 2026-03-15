@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Docker CLI (for DooD: allows starting sandbox containers via host Docker socket)
-COPY --from=docker:cli /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=public.ecr.aws/docker/library/docker:cli /usr/local/bin/docker /usr/local/bin/docker
 
 # Install uv from a pinned versioned image (avoids curl|sh from untrusted remote)
 RUN pip install uv
